@@ -1,7 +1,7 @@
 from turtle import forward
 import pygame
 from circleshape import CircleShape
-from constants import PLAYER_RADIUS, PLAYER_SHOOT_SPEED, PLAYER_TURN_SPEED, SHOT_RADIUS
+from constants import PLAYER_RADIUS, PLAYER_SHOOT_COOLDOWN, PLAYER_SHOOT_SPEED, PLAYER_TURN_SPEED, SHOT_RADIUS
 from shot import Shot
 
 
@@ -10,6 +10,7 @@ class Player(CircleShape):
   def __init__(self, x, y):
     super().__init__(x, y, PLAYER_RADIUS)
     self.rotation = 0
+    self.shoot_timer = 0
 
   # in the player class
   def triangle(self):
@@ -38,12 +39,16 @@ class Player(CircleShape):
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_a]:
-      self.rotate(dt)
-    if keys[pygame.K_d]:
       self.rotate(-dt)
+    if keys[pygame.K_d]:
+      self.rotate(dt)
     if keys[pygame.K_w]:
       self.move(dt)
     if keys[pygame.K_s]:
       self.move(-dt)
     if keys[pygame.K_SPACE]:
+      if self.shoot_timer > 0:
+        self.shoot_timer -= dt
+        return
       self.shoot()
+      self.shoot_timer = PLAYER_SHOOT_COOLDOWN
